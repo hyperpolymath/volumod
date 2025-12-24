@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VoluMod</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container" role="main" aria-label="VoluMod Audio Optimizer">
+    <!-- Header -->
+    <header class="header">
+      <div class="logo" aria-hidden="true">
+        <span class="logo-icon"></span>
+      </div>
+      <h1 class="title">VoluMod</h1>
+      <div id="status-indicator" class="status active" role="status" aria-live="polite">
+        <span class="status-dot"></span>
+        <span id="status-text">Active</span>
+      </div>
+    </header>
+
+    <!-- Bypass Button - Most Prominent -->
+    <div class="bypass-section">
+      <button
+        id="bypass-btn"
+        class="bypass-button"
+        role="switch"
+        aria-checked="false"
+        aria-label="Bypass audio processing"
+        tabindex="0">
+        <span class="bypass-label">Bypass</span>
+        <span class="bypass-state" aria-hidden="true">OFF</span>
+      </button>
+    </div>
+
+    <!-- Level Meters -->
+    <div class="meters-section" aria-label="Audio levels">
+      <div class="meter">
+        <span class="meter-label">In</span>
+        <div class="meter-bar" role="meter" aria-label="Input level" aria-valuenow="-30" aria-valuemin="-60" aria-valuemax="0">
+          <div id="input-meter" class="meter-fill"></div>
+        </div>
+        <span id="input-level" class="meter-value">-30 dB</span>
+      </div>
+      <div class="meter">
+        <span class="meter-label">Out</span>
+        <div class="meter-bar" role="meter" aria-label="Output level" aria-valuenow="-14" aria-valuemin="-60" aria-valuemax="0">
+          <div id="output-meter" class="meter-fill"></div>
+        </div>
+        <span id="output-level" class="meter-value">-14 dB</span>
+      </div>
+    </div>
+
+    <!-- Preset Selection -->
+    <div class="preset-section">
+      <label for="preset-select" class="preset-label">Preset</label>
+      <select id="preset-select" class="preset-select" aria-describedby="preset-help">
+        <option value="auto" selected>Auto (Recommended)</option>
+        <option value="speech">Speech / Podcasts</option>
+        <option value="music">Music</option>
+        <option value="night">Night Mode</option>
+        <option value="hearing">Hearing Assistance</option>
+      </select>
+      <span id="preset-help" class="visually-hidden">
+        Select a preset optimized for different content types
+      </span>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <button
+        id="learn-noise-btn"
+        class="action-button"
+        aria-label="Learn noise profile from current audio">
+        Learn Noise
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <a href="#" id="settings-link" class="footer-link" aria-label="Open settings">Settings</a>
+      <span class="footer-divider" aria-hidden="true">|</span>
+      <a href="#" id="help-link" class="footer-link" aria-label="Get help">Help</a>
+    </footer>
+  </div>
+
+  <!-- Screen reader announcements -->
+  <div id="sr-announcements" class="visually-hidden" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

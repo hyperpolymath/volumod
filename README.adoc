@@ -1,1 +1,293 @@
+= VoluMod
+:toc: left
+:toclevels: 3
+:icons: font
+:source-highlighter: highlight.js
 
+== A User-Friendly, Cross-Platform Tool for Autonomous Audio Volume and Clarity Optimization
+
+VoluMod automatically optimizes audio volume and clarity in real-time for non-technical users across browsers and system tray applications.
+
+image::docs/images/volumod-banner.png[VoluMod Banner,width=100%]
+
+=== Features
+
+==== Core Audio Processing
+* **Real-time Volume Normalization** - EBU R128 / LUFS-based loudness normalization
+* **Dynamic Range Compression** - Adaptive compression with configurable modes
+* **Perceptual Noise Reduction** - AI-ready noise floor detection and reduction
+* **Graphic Equalization** - 10-band EQ with adaptive presets
+* **Brick-wall Limiting** - Protection against clipping
+
+==== Contextual Adaptation
+* **Time-of-Day Profiles** - Automatic adjustment based on time (quieter at night)
+* **Device Detection** - Optimized settings for headphones, speakers, etc.
+* **Environment Awareness** - Adapts to ambient noise levels (optional microphone input)
+
+==== User Experience
+* **Zero-Learning-Curve Interface** - Simple, intuitive design for all ages
+* **One-Click Bypass** - Instantly disable all processing
+* **WCAG Compliant** - Full accessibility support including screen readers
+* **Keyboard Navigation** - Complete keyboard shortcut support
+
+=== Installation
+
+==== System Application
+
+[source,bash]
+----
+# Clone the repository
+git clone https://github.com/hyperpolymath/volumod.git
+cd volumod
+
+# Build with V
+v -prod src/main.v -o volumod
+
+# Run
+./volumod
+----
+
+==== Browser Extension
+
+[source,bash]
+----
+# Build ReScript components
+cd browser/rescript
+npm install
+npm run build
+
+# Load extension in browser
+# Chrome: chrome://extensions → Load unpacked → select browser/
+# Firefox: about:debugging → Load Temporary Add-on → select browser/manifest.json
+----
+
+=== Architecture
+
+[source]
+----
+volumod/
+├── src/
+│   ├── core/              # Core audio types and DSP utilities
+│   │   ├── audio_buffer.v
+│   │   └── dsp_utils.v
+│   ├── processors/        # Audio processing modules
+│   │   ├── normalizer.v   # Loudness normalization
+│   │   ├── compressor.v   # Dynamic range compression
+│   │   ├── noise_reducer.v # Noise reduction
+│   │   └── equalizer.v    # Graphic/parametric EQ
+│   ├── engine/            # Processing engine
+│   │   ├── processor.v    # Main audio processor chain
+│   │   └── context.v      # Contextual adaptation
+│   ├── platform/          # Platform-specific audio capture
+│   │   └── audio_capture.v
+│   ├── ffi/               # Cross-language interop (Bebop)
+│   │   ├── bebop_types.v
+│   │   └── bebop_bridge.v
+│   ├── ui/                # User interface
+│   │   ├── tray.v         # System tray
+│   │   └── accessibility.v # WCAG compliance
+│   └── main.v             # Application entry point
+├── browser/               # Browser extension
+│   ├── manifest.json
+│   ├── background.js
+│   ├── content.js
+│   ├── popup/
+│   └── rescript/          # ReScript audio processor
+└── v.mod                  # V module definition
+----
+
+=== Technical Stack
+
+[cols="1,3"]
+|===
+| Component | Technology
+
+| Core Audio Processing
+| V language (memory-safe, high-performance)
+
+| Cross-Platform IPC
+| Bebop (serialization/interop framework)
+
+| Browser Extension
+| ReScript → JavaScript (Web Audio API)
+
+| Audio Capture
+| PortAudio / WASAPI / CoreAudio / ALSA
+
+| UI Framework
+| V UI (cross-platform native)
+|===
+
+=== Audio Processing Pipeline
+
+[source]
+----
+Input Audio
+    │
+    ▼
+┌─────────────────┐
+│ Noise Reduction │ ← Clean up source audio
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Normalization  │ ← Achieve consistent loudness (-14 LUFS default)
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Compression    │ ← Control dynamic range
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│  Equalization   │ ← Shape frequency response
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────┐
+│    Limiting     │ ← Protect output from clipping
+└────────┬────────┘
+         │
+         ▼
+    Output Audio
+----
+
+=== Presets
+
+[cols="1,2,1,1"]
+|===
+| Preset | Description | Target LUFS | Compression
+
+| Auto
+| Balanced for general content
+| -14
+| Moderate
+
+| Speech
+| Optimized for podcasts/calls
+| -16
+| Light
+
+| Music
+| Preserves dynamics
+| -14
+| Light
+
+| Night Mode
+| Quieter, compressed for low volume
+| -20
+| Aggressive
+
+| Hearing Assistance
+| Boosted clarity, enhanced speech
+| -12
+| Moderate
+|===
+
+=== Accessibility
+
+VoluMod is designed to be accessible to all users:
+
+* **Screen Reader Support** - Full ARIA labels and live regions
+* **Keyboard Navigation** - All features accessible via keyboard
+* **High Contrast Mode** - Respects system preferences
+* **Reduced Motion** - Respects prefers-reduced-motion
+* **Hearing Loop Integration** - Telecoil/T-coil support planned
+
+==== Keyboard Shortcuts
+
+[cols="1,2"]
+|===
+| Shortcut | Action
+
+| Ctrl+Shift+B
+| Toggle bypass
+
+| Ctrl+Shift+N
+| Start noise learning
+
+| Ctrl+Shift+Up
+| Increase target loudness
+
+| Ctrl+Shift+Down
+| Decrease target loudness
+
+| F1
+| Open help
+|===
+
+=== Privacy
+
+* **100% On-Device Processing** - No audio data leaves your device
+* **No Analytics** - No usage tracking or telemetry
+* **Optional Microphone** - Ambient noise detection is opt-in
+* **Local Storage Only** - Settings stored locally
+
+=== Development
+
+==== Building from Source
+
+[source,bash]
+----
+# Prerequisites
+# - V compiler: https://vlang.io
+# - Node.js (for browser extension)
+
+# Clone
+git clone https://github.com/hyperpolymath/volumod.git
+cd volumod
+
+# Build V application
+v -prod src/main.v -o volumod
+
+# Build browser extension
+cd browser/rescript
+npm install
+npm run build
+----
+
+==== Running Tests
+
+[source,bash]
+----
+v test src/
+----
+
+=== Roadmap
+
+[cols="1,2,1"]
+|===
+| Phase | Features | Status
+
+| MVP
+| Core normalization, compression, bypass, basic UI
+| ✅ Complete
+
+| Phase 2
+| Noise reduction, EQ, contextual adaptation
+| ✅ Complete
+
+| Phase 3
+| Browser extension, accessibility features
+| ✅ Complete
+
+| Phase 4
+| Advanced noise reduction (ML), hearing loop integration
+| 🔄 Planned
+|===
+
+=== License
+
+MIT License - See LICENSE file for details.
+
+=== Contributing
+
+Contributions are welcome! Please read CONTRIBUTING.md for guidelines.
+
+=== Acknowledgments
+
+* V Language: https://vlang.io
+* Bebop: https://github.com/betwixt-labs/bebop
+* ReScript: https://rescript-lang.org
+* Web Audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
