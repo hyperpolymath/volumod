@@ -1,0 +1,834 @@
+#Start(1767008915354)
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:44:14-24
+
+  42 ┆     1.0
+  43 ┆   } else {
+  44 ┆     1.0 -. Js.Math.exp(-1.0 /. (timeMs *. sampleRate /. 1000.0))
+  45 ┆   }
+  46 ┆ }
+
+  deprecated: Js.Math.exp
+  Use `Math.exp` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:66:40-56
+
+  64 │ 
+  65 │ // DSP helpers
+  66 │ let dbToLinear = (db: float): float => Js.Math.pow_float(~base=10.0, ~e
+     │ xp=db /. 20.0)
+  67 │ 
+  68 │ let linearToDb = (linear: float): float => {
+
+  deprecated: Js.Math.pow_float
+  Use `Math.pow` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:72:13-25
+
+  70 │     -120.0
+  71 │   } else {
+  72 │     20.0 *. Js.Math.log10(linear)
+  73 │   }
+  74 │ }
+
+  deprecated: Js.Math.log10
+  Use `Math.log10` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:76:56-72
+
+  74 │ }
+  75 │ 
+  76 │ let clamp = (v: float, lo: float, hi: float): float => Js.Math.max_floa
+     │ t(lo, Js.Math.min_float(hi, v))
+  77 │ 
+  78 │ // Process a single channel of audio
+
+  deprecated: Js.Math.max_float
+  Use `Math.max` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:76:78-94
+
+  74 │ }
+  75 │ 
+  76 │ let clamp = (v: float, lo: float, hi: float): float => Js.Math.max_floa
+     │ t(lo, Js.Math.min_float(hi, v))
+  77 │ 
+  78 │ // Process a single channel of audio
+
+  deprecated: Js.Math.min_float
+  Use `Math.min` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:82:5-22
+
+  80 ┆ if state.bypass {
+  81 ┆   // Copy input to output unchanged
+  82 ┆   Js.Array2.forEachi(input, (sample, i) => {
+  83 ┆     output[i] = sample
+  84 ┆   })
+
+  deprecated: Js.Array2.forEachi
+  Use `Array.forEachWithIndex` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:86:15-30
+
+  84 ┆   })
+  85 ┆ } else {
+  86 ┆   let len = Js.Array2.length(input)
+  87 ┆ 
+  88 ┆   // Calculate input RMS
+
+  deprecated: Js.Array2.length
+  Use `Array.length` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:90:5-21
+
+  88 ┆ // Calculate input RMS
+  89 ┆ let inputSum = ref(0.0)
+  90 ┆ Js.Array2.forEach(input, sample => {
+  91 ┆   inputSum := inputSum.contents +. sample *. sample
+  92 ┆ })
+
+  deprecated: Js.Array2.forEach
+  Use `Array.forEach` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:93:20-31
+
+  91 ┆   inputSum := inputSum.contents +. sample *. sample
+  92 ┆ })
+  93 ┆ let inputRms = Js.Math.sqrt(inputSum.contents /. float_of_int(len))
+  94 ┆ let inputDb = linearToDb(inputRms)
+  95 ┆ 
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:93:54-65
+
+  91 ┆   inputSum := inputSum.contents +. sample *. sample
+  92 ┆ })
+  93 ┆ let inputRms = Js.Math.sqrt(inputSum.contents /. float_of_int(len))
+  94 ┆ let inputDb = linearToDb(inputRms)
+  95 ┆ 
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:101:42-53
+
+   99 ┆ 
+  100 ┆ let integratedDb = if state.normSamples > 0 {
+  101 ┆   let mean = state.normIntegrated /. float_of_int(state.normSamples)
+  102 ┆   linearToDb(Js.Math.sqrt(mean))
+  103 ┆ } else {
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:102:18-29
+
+  100 ┆ let integratedDb = if state.normSamples > 0 {
+  101 ┆   let mean = state.normIntegrated /. float_of_int(state.normSamples)
+  102 ┆   linearToDb(Js.Math.sqrt(mean))
+  103 ┆ } else {
+  104 ┆   -120.0
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:112:5-22
+
+  110 ┆ 
+  111 ┆ // Process each sample
+  112 ┆ Js.Array2.forEachi(input, (sample, i) => {
+  113 ┆   // Apply normalization gain
+  114 ┆   let normalized = sample *. state.normGain
+
+  deprecated: Js.Array2.forEachi
+  Use `Array.forEachWithIndex` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:117:33-49
+
+  115 ┆ 
+  116 ┆ // Compression
+  117 ┆ let sampleDb = linearToDb(Js.Math.abs_float(normalized))
+  118 ┆ 
+  119 ┆ // Envelope follower
+
+  deprecated: Js.Math.abs_float
+  Use `Math.abs` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:143:18-34
+
+  141 ┆ // Limiting
+  142 ┆ let ceilingLinear = dbToLinear(-0.5)
+  143 ┆ let peak = Js.Math.abs_float(compressed)
+  144 ┆ 
+  145 ┆ if peak > ceilingLinear {
+
+  deprecated: Js.Math.abs_float
+  Use `Math.abs` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 26
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:94:9-15
+
+  92 ┆ })
+  93 ┆ let inputRms = Js.Math.sqrt(inputSum.contents /. float_of_int(len))
+  94 ┆ let inputDb = linearToDb(inputRms)
+  95 ┆ 
+  96 ┆ // Normalization: calculate required gain
+
+  unused variable inputDb.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_inputDb`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:164:22-26
+
+  162 │ 
+  163 │ // Message handler for receiving commands from main thread
+  164 │ let handleMessage = (state: processorState, data: 'a): unit => {
+  165 │   // Handle commands like bypass toggle, preset changes, etc.
+  166 │   ()
+
+  unused variable state.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_state`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/AudioWorkletProcessor.res:164:45-48
+
+  162 │ 
+  163 │ // Message handler for receiving commands from main thread
+  164 │ let handleMessage = (state: processorState, data: 'a): unit => {
+  165 │   // Handle commands like bypass toggle, preset changes, etc.
+  166 │   ()
+
+  unused variable data.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_data`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:22:5-21
+
+  20 │ module DSP = {
+  21 │   let dbToLinear = (db: float): float => {
+  22 │     Js.Math.pow_float(~base=10.0, ~exp=db /. 20.0)
+  23 │   }
+  24 │ 
+
+  deprecated: Js.Math.pow_float
+  Use `Math.pow` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:29:15-27
+
+  27 ┆     -120.0
+  28 ┆   } else {
+  29 ┆     20.0 *. Js.Math.log10(linear)
+  30 ┆   }
+  31 ┆ }
+
+  deprecated: Js.Math.log10
+  Use `Math.log10` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:34:5-21
+
+  32 ┆ 
+  33 ┆ let clamp = (value: float, minVal: float, maxVal: float): float => {
+  34 ┆   Js.Math.max_float(minVal, Js.Math.min_float(maxVal, value))
+  35 ┆ }
+  36 ┆ 
+
+  deprecated: Js.Math.max_float
+  Use `Math.max` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:34:31-47
+
+  32 ┆ 
+  33 ┆ let clamp = (value: float, minVal: float, maxVal: float): float => {
+  34 ┆   Js.Math.max_float(minVal, Js.Math.min_float(maxVal, value))
+  35 ┆ }
+  36 ┆ 
+
+  deprecated: Js.Math.min_float
+  Use `Math.min` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:42:14-24
+
+  40 ┆   } else {
+  41 ┆     let samples = timeMs *. sampleRate /. 1000.0
+  42 ┆     1.0 -. Js.Math.exp(-1.0 /. samples)
+  43 ┆   }
+  44 ┆ }
+
+  deprecated: Js.Math.exp
+  Use `Math.exp` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:64:20-36
+
+  62 ┆ 
+  63 ┆ let process = (ef: t, input: float): float => {
+  64 ┆   let absInput = Js.Math.abs_float(input)
+  65 ┆   if absInput > ef.envelope {
+  66 ┆     ef.envelope = ef.envelope +. ef.attackCoef *. (absInput -. ef.envel
+     ┆ ope)
+
+  deprecated: Js.Math.abs_float
+  Use `Math.abs` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:109:21-31
+
+  107 ┆ 
+  108 ┆ let configure = (f: t, filterType: filterType, freq: float, sampleRate
+      ┆ : float, q: float, gainDb: float): unit => {
+  109 ┆   let w0 = 2.0 *. Js.Math._PI *. freq /. sampleRate
+  110 ┆   let cosW0 = Js.Math.cos(w0)
+  111 ┆   let sinW0 = Js.Math.sin(w0)
+
+  deprecated: Js.Math._PI
+  Use `Math.Constants.pi` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:110:17-27
+
+  108 ┆ let configure = (f: t, filterType: filterType, freq: float, sampleRate
+      ┆ : float, q: float, gainDb: float): unit => {
+  109 ┆   let w0 = 2.0 *. Js.Math._PI *. freq /. sampleRate
+  110 ┆   let cosW0 = Js.Math.cos(w0)
+  111 ┆   let sinW0 = Js.Math.sin(w0)
+  112 ┆   let alpha = sinW0 /. (2.0 *. q)
+
+  deprecated: Js.Math.cos
+  Use `Math.cos` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:111:17-27
+
+  109 ┆ let w0 = 2.0 *. Js.Math._PI *. freq /. sampleRate
+  110 ┆ let cosW0 = Js.Math.cos(w0)
+  111 ┆ let sinW0 = Js.Math.sin(w0)
+  112 ┆ let alpha = sinW0 /. (2.0 *. q)
+  113 ┆ let a = DSP.dbToLinear(gainDb /. 2.0)
+
+  deprecated: Js.Math.sin
+  Use `Math.sin` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:197:48-59
+
+  195 ┆ }
+  196 ┆ 
+  197 ┆ let meanSquares = sumSquares.contents /. float_of_int(len)
+  198 ┆ let rmsDb = if meanSquares > 0.0 {
+  199 ┆   DSP.linearToDb(Js.Math.sqrt(meanSquares))
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:199:24-35
+
+  197 ┆ let meanSquares = sumSquares.contents /. float_of_int(len)
+  198 ┆ let rmsDb = if meanSquares > 0.0 {
+  199 ┆   DSP.linearToDb(Js.Math.sqrt(meanSquares))
+  200 ┆ } else {
+  201 ┆   -120.0
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:210:39-50
+
+  208 ┆ // Calculate gain adjustment
+  209 ┆ let integratedDb = if n.sampleCount > 0 {
+  210 ┆   let mean = n.integratedSum /. float_of_int(n.sampleCount)
+  211 ┆   if mean > 0.0 {
+  212 ┆     DSP.linearToDb(Js.Math.sqrt(mean))
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:212:26-37
+
+  210 ┆ let mean = n.integratedSum /. float_of_int(n.sampleCount)
+  211 ┆ if mean > 0.0 {
+  212 ┆   DSP.linearToDb(Js.Math.sqrt(mean))
+  213 ┆ } else {
+  214 ┆   -120.0
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:280:38-54
+
+  278 ┆ for i in 0 to len - 1 {
+  279 ┆   let sample = Float32Array.get(samples, i)
+  280 ┆   let inputDb = DSP.linearToDb(Js.Math.abs_float(sample))
+  281 ┆ 
+  282 ┆   // Envelope follower
+
+  deprecated: Js.Math.abs_float
+  Use `Math.abs` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:323:20-36
+
+  321 ┆ for i in 0 to len - 1 {
+  322 ┆   let sample = Float32Array.get(samples, i)
+  323 ┆   let peak = Js.Math.abs_float(sample)
+  324 ┆ 
+  325 ┆   if peak > ceilingLinear {
+
+  deprecated: Js.Math.abs_float
+  Use `Math.abs` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:373:37-48
+
+  371 ┆   inputSum := inputSum.contents +. s *. s
+  372 ┆ }
+  373 ┆ p.inputLevel = DSP.linearToDb(Js.Math.sqrt(inputSum.contents /. float_
+      ┆ of_int(len)))
+  374 ┆ 
+  375 ┆ // Process chain
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:373:71-82
+
+  371 ┆   inputSum := inputSum.contents +. s *. s
+  372 ┆ }
+  373 ┆ p.inputLevel = DSP.linearToDb(Js.Math.sqrt(inputSum.contents /. float_
+      ┆ of_int(len)))
+  374 ┆ 
+  375 ┆ // Process chain
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:386:38-49
+
+  384 ┆       outputSum := outputSum.contents +. s *. s
+  385 ┆     }
+  386 ┆     p.outputLevel = DSP.linearToDb(Js.Math.sqrt(outputSum.contents /. 
+      ┆ float_of_int(len)))
+  387 ┆   }
+  388 ┆ }
+
+  deprecated: Js.Math.sqrt
+  Use `Math.sqrt` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:386:73-84
+
+  384 ┆       outputSum := outputSum.contents +. s *. s
+  385 ┆     }
+  386 ┆     p.outputLevel = DSP.linearToDb(Js.Math.sqrt(outputSum.contents /. 
+      ┆ float_of_int(len)))
+  387 ┆   }
+  388 ┆ }
+
+  deprecated: Pervasives.float_of_int
+  Use `Int.toFloat` instead. This will be removed in v13
+
+
+  Warning number 26
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModProcessor.res:198:11-15
+
+  196 ┆ 
+  197 ┆ let meanSquares = sumSquares.contents /. float_of_int(len)
+  198 ┆ let rmsDb = if meanSquares > 0.0 {
+  199 ┆   DSP.linearToDb(Js.Math.sqrt(meanSquares))
+  200 ┆ } else {
+
+  unused variable rmsDb.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_rmsDb`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:6:50-62
+
+  4 │ module Document = {
+  5 │   @val external document: 'a = "document"
+  6 │   @send external getElementById: ('a, string) => Js.Nullable.t<Dom.eleme
+    │ nt> = "getElementById"
+  7 │   @send external createElement: ('a, string) => Dom.element = "createEle
+    │ ment"
+  8 │   @send external querySelector: ('a, string) => Js.Nullable.t<Dom.elemen
+    │ t> = "querySelector"
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:8:49-61
+
+   6 │   @send external getElementById: ('a, string) => Js.Nullable.t<Dom.elem
+     │ ent> = "getElementById"
+   7 │   @send external createElement: ('a, string) => Dom.element = "createEl
+     │ ement"
+   8 │   @send external querySelector: ('a, string) => Js.Nullable.t<Dom.eleme
+     │ nt> = "querySelector"
+   9 │ }
+  10 │ 
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:112:19-32
+
+  110 ┆ 
+  111 ┆ // Find preset config
+  112 ┆ let presetOpt = Js.Array2.find(presets, p => p.name == presetName)
+  113 ┆ switch presetOpt {
+  114 ┆ | Some(preset) => {
+
+  deprecated: Js.Array2.find
+  Use `Array.find` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:125:27-39
+
+  123 │ module PopupUI = {
+  124 │   type uiState = {
+  125 │     mutable bypassButton: Js.Nullable.t<Dom.element>,
+  126 │     mutable presetSelect: Js.Nullable.t<Dom.element>,
+  127 │     mutable levelMeter: Js.Nullable.t<Dom.element>,
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:126:27-39
+
+  124 ┆ type uiState = {
+  125 ┆   mutable bypassButton: Js.Nullable.t<Dom.element>,
+  126 ┆   mutable presetSelect: Js.Nullable.t<Dom.element>,
+  127 ┆   mutable levelMeter: Js.Nullable.t<Dom.element>,
+  128 ┆   mutable statusText: Js.Nullable.t<Dom.element>,
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:127:25-37
+
+  125 ┆   mutable bypassButton: Js.Nullable.t<Dom.element>,
+  126 ┆   mutable presetSelect: Js.Nullable.t<Dom.element>,
+  127 ┆   mutable levelMeter: Js.Nullable.t<Dom.element>,
+  128 ┆   mutable statusText: Js.Nullable.t<Dom.element>,
+  129 ┆ }
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:128:25-37
+
+  126 ┆   mutable presetSelect: Js.Nullable.t<Dom.element>,
+  127 ┆   mutable levelMeter: Js.Nullable.t<Dom.element>,
+  128 ┆   mutable statusText: Js.Nullable.t<Dom.element>,
+  129 ┆ }
+  130 ┆ 
+
+  deprecated: Js.Nullable.t
+  Use `Nullable.t` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:132:19-34
+
+  130 ┆ 
+  131 ┆ let ui: uiState = {
+  132 ┆   bypassButton: Js.Nullable.null,
+  133 ┆   presetSelect: Js.Nullable.null,
+  134 ┆   levelMeter: Js.Nullable.null,
+
+  deprecated: Js.Nullable.null
+  Use `Nullable.null` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:133:19-34
+
+  131 ┆ let ui: uiState = {
+  132 ┆   bypassButton: Js.Nullable.null,
+  133 ┆   presetSelect: Js.Nullable.null,
+  134 ┆   levelMeter: Js.Nullable.null,
+  135 ┆   statusText: Js.Nullable.null,
+
+  deprecated: Js.Nullable.null
+  Use `Nullable.null` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:134:17-32
+
+  132 ┆   bypassButton: Js.Nullable.null,
+  133 ┆   presetSelect: Js.Nullable.null,
+  134 ┆   levelMeter: Js.Nullable.null,
+  135 ┆   statusText: Js.Nullable.null,
+  136 ┆ }
+
+  deprecated: Js.Nullable.null
+  Use `Nullable.null` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 3
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:135:17-32
+
+  133 ┆   presetSelect: Js.Nullable.null,
+  134 ┆   levelMeter: Js.Nullable.null,
+  135 ┆   statusText: Js.Nullable.null,
+  136 ┆ }
+  137 ┆ 
+
+  deprecated: Js.Nullable.null
+  Use `Nullable.null` instead.
+
+  This can be automatically migrated by the ReScript migration tool. Run `rescript-tools migrate-all <project-root>` to run all automatic migrations available in your project, or `rescript-tools migrate <file>` to migrate a single file.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:74:22-28
+
+  72 │ 
+  73 │ // Handle incoming messages
+  74 │ let handleMessage = (message: 'a): unit => {
+  75 │   // Message handling logic
+  76 │   ()
+
+  unused variable message.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_message`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:82:50-57
+
+  80 │ let init = (): unit => {
+  81 │   // Load saved settings
+  82 │   Chrome.Storage.Local.get(["volumod_settings"], settings => {
+  83 │     // Apply saved settings
+  84 │     ()
+
+  unused variable settings.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_settings`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:153:19-25
+
+  151 │ // Accessibility announcements
+  152 │ module Accessibility = {
+  153 │   let announce = (message: string, priority: string): unit => {
+  154 │     // Create live region announcement
+  155 │     let liveRegion = Document.createElement(Document.document, "div")
+
+  unused variable message.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_message`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 27
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:153:36-43
+
+  151 │ // Accessibility announcements
+  152 │ module Accessibility = {
+  153 │   let announce = (message: string, priority: string): unit => {
+  154 │     // Create live region announcement
+  155 │     let liveRegion = Document.createElement(Document.document, "div")
+
+  unused variable priority.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_priority`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+
+  Warning number 26
+  /var/home/hyper/repos/volumod/browser/rescript/src/VoluModExtension.res:155:9-18
+
+  153 ┆ let announce = (message: string, priority: string): unit => {
+  154 ┆   // Create live region announcement
+  155 ┆   let liveRegion = Document.createElement(Document.document, "div")
+  156 ┆   // Set ARIA attributes and announce
+  157 ┆   ()
+
+  unused variable liveRegion.
+
+Fix this by:
+- Deleting the variable if it's not used anymore.
+- Prepending the variable name with `_` (like `_liveRegion`) to ignore that the variable is unused.
+- Using the variable somewhere.
+
+#Done(1767008915813)
