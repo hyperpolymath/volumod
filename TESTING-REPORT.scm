@@ -1,4 +1,4 @@
-;; SPDX-License-Identifier: MIT
+;; SPDX-License-Identifier: MPL-2.0-or-later
 ;; VoluMod Testing Report
 ;; Generated: 2025-12-29
 ;; Schema: testing-report/v1.0
