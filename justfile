@@ -1,27 +1,65 @@
-# SPDX-License-Identifier: AGPL-3.0-or-later
-# justfile - Just recipes for this project
+# SPDX-License-Identifier: PMPL-1.0-or-later
+# justfile - Just recipes for VoluMod
 # See: https://github.com/hyperpolymath/mustfile
 
 # Default recipe
 default:
     @just --list
 
-# Build the project
+# Build the V system application
 build:
-    @echo "Build not configured yet"
+    v -prod src/main.v -o volumod
 
-# Run tests
+# Build debug version
+build-debug:
+    v src/main.v -o volumod-debug
+
+# Build the ReScript browser extension
+build-browser:
+    cd browser/rescript && npx rescript build
+
+# Build everything
+build-all: build build-browser
+
+# Run the application
+run: build
+    ./volumod
+
+# Run V tests
 test:
-    @echo "Tests not configured yet"
+    v test src/
 
-# Format code
+# Run all tests (V + browser)
+test-all: test
+    @echo "Browser extension tests not yet configured"
+
+# Format V source code
 fmt:
-    @echo "Formatting not configured yet"
+    v fmt -w src/
 
-# Lint code
+# Lint V source code
 lint:
-    @echo "Linting not configured yet"
+    v fmt -verify src/
 
 # Clean build artifacts
 clean:
-    @echo "Clean not configured yet"
+    rm -f volumod volumod-debug
+    rm -f browser/rescript/lib/bs/.compiler.log
+    rm -rf browser/rescript/lib/bs/.bsbuild
+    rm -f browser/rescript/src/*.mjs
+
+# Check project status
+status:
+    @echo "=== Build Status ==="
+    @v . && echo "V build: OK" || echo "V build: FAILED"
+    @echo ""
+    @echo "=== Test Status ==="
+    @v test src/ 2>&1 || true
+    @echo ""
+    @echo "=== Binary ==="
+    @ls -lh volumod 2>/dev/null || echo "No binary (run 'just build')"
+
+# Run panic-attack security scan
+scan:
+    panic-attack assail . --output /tmp/volumod-scan.json
+    @echo "Scan output: /tmp/volumod-scan.json"

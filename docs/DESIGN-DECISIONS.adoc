@@ -1,0 +1,335 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= VoluMod: Design Decisions
+:toc: left
+:toclevels: 3
+:icons: font
+:date: 2025-10-11
+
+== Overview
+
+This document captures the key design decisions for VoluMod, derived from architecture exploration conducted in October-December 2025.
+All decisions are also codified as ADRs in `.machine_readable/META.scm`.
+
+== 1. Language Evaluation
+
+=== Languages Evaluated
+
+The following languages were assessed for VoluMod's core audio processing:
+
+[cols="1,1,1,1"]
+|===
+| Language | DSP Performance | OS Audio Control | Verdict
+
+| **Rust**
+| Excellent
+| Excellent (cpal, pulsectl)
+| **Best for Linux audio**
+
+| **C# (.NET)**
+| Very High
+| Excellent on Windows (NAudio, CoreAudioApi)
+| **Best for Windows audio**
+
+| **V**
+| Very High (C-level via GCC/Clang)
+| Moderate (miniaudio bindings, limited PipeWire)
+| **Selected for cross-platform app**
+
+| Julia
+| Excellent (JIT, near-C speed)
+| Poor (no standard audio mixer libraries)
+| Rejected: GC jitter, poor system integration
+
+| Forth
+| Extreme
+| Non-existent
+| Rejected: no modern audio ecosystem
+
+| Fortran
+| Exceptional for numerics
+| Non-existent
+| Rejected: no OS audio integration
+|===
+
+=== Decision: V with Rust Audio Shim Option
+
+**Selected V language** for the core system application due to:
+
+* Cross-platform single-binary compilation
+* C-level performance via GCC/Clang code emission
+* V UI toolkit for native cross-platform GUI
+* Memory safety by default
+
+**Risk acknowledged**: V has limited PipeWire/PulseAudio bindings.
+If V cannot provide adequate loopback audio capture on Linux, a **Rust shim** using `cpal` (audio I/O) and `pulsectl` (volume control) will be implemented for the audio capture layer only.
+
+**Windows strategy**: C# with NAudio remains the best option for Windows-specific builds, to be evaluated at v0.7.0.
+
+=== ADR-001 (META.scm)
+
+_Status: Accepted. Date: 2025-12-24._
+
+== 2. Hybrid AGC Architecture
+
+=== Three Heuristic Options Evaluated
+
+[cols="1,3,2"]
+|===
+| Option | Description | Role in Final System
+
+| **1. Real-time AGC**
+| Measure current loudness (RMS), adjust toward target. Low overall -> volume up, high overall -> volume down.
+| **Core driver**: handles dynamic shifts
+
+| **2. Statistical/LLM learning**
+| Pre-analyze content to infer intended loudness. Use ML to learn patterns.
+| **Rejected**: unnecessary complexity
+
+| **3. Compressed range (min/max boundary)**
+| Fixed volume boundaries that cannot be exceeded regardless of AGC output.
+| **Safety guardrail**: enforces physical limits
+|===
+
+=== Decision: Combine Options 1 + 3, Reject Option 2
+
+The hybrid approach:
+
+. **Calculate loudness** (RMS of current audio buffer)
+. **AGC adjustment** based on distance from target RMS threshold
+. **Clamp** final volume to min/max limits set by current time-of-day mode
+
+Statistical/LLM learning (Option 2) rejected because:
+
+* Too complex for a system utility
+* Real-time AGC already corrects mixed audio output
+* Adds computational overhead without proportional benefit
+* Requires training data and model maintenance
+
+=== ADR-003 (META.scm)
+
+_Status: Accepted. Date: 2025-10-11._
+
+== 3. Lookahead Processing
+
+=== Problem
+
+Standard AGC is _reactive_: it adjusts volume _after_ a loud sound has already hit the speakers.
+A sudden explosion in a movie at 2am wakes the household before AGC can respond.
+
+=== Decision: Lookahead Buffer
+
+Buffer audio for 50-100ms so VoluMod can "see" upcoming peaks and pre-emptively adjust volume _before_ the loud sound reaches the speaker.
+
+This is the same technique used by professional compressors and limiters.
+
+=== Implementation Architecture
+
+[source]
+----
+┌─────────────┐     ┌──────────────────┐     ┌─────────────┐
+│ Audio Capture│────→│ Circular Buffer  │────→│ Main Loop   │
+│ Thread       │     │ (50-100ms)       │     │ (AGC Logic) │
+│ (constant)   │     │                  │     │             │
+│              │     │ Write ──→ ████   │     │ Reads ahead │
+│              │     │         ████████ │     │ of playback │
+│              │     │         ████████ │     │ position    │
+└─────────────┘     └──────────────────┘     └─────────────┘
+
+  Separate thread      Ring buffer with        Analyzes "future"
+  fills buffer         write index ahead       audio, adjusts
+  in real-time         of read index           before playback
+----
+
+Two structural requirements:
+
+. **Asynchronous stream handler**: Audio library runs in a dedicated thread, constantly pulling data and filling the circular buffer.
+. **Lookahead indexing**: Main AGC loop reads RMS from an index _ahead_ of the actual playback index.
+
+=== Latency Tradeoff
+
+* Adds 50-100ms latency (configurable)
+* Imperceptible for video/podcast playback
+* May be noticeable for live communication (VoIP) -- bypass recommended for calls
+
+=== ADR-004 (META.scm)
+
+_Status: Accepted. Date: 2025-10-11._
+
+== 4. RMS as Proxy for LUFS
+
+=== The Psychophysics Problem
+
+What humans perceive as "loud" is not simply the peak voltage (amplitude) of an audio signal.
+Perceived loudness depends on:
+
+* **Frequency** - Human ears are more sensitive to 1-5kHz (speech range)
+* **Duration** - Brief transients feel less loud than sustained tones
+* **Average power** - Overall energy matters more than peak amplitude
+
+Professional broadcast uses **LUFS** (Loudness Units Full Scale), defined by EBU R128.
+LUFS accurately models human hearing through frequency-weighted power measurement.
+However, LUFS computation is expensive (requires K-weighting filter, gated measurement).
+
+=== Decision: Use RMS
+
+**Root Mean Square** (RMS) measures average energy over a time window.
+It is a simple, computationally cheap physical measurement that approximates LUFS "well enough" for consumer use.
+
+[cols="1,1"]
+|===
+| Metric | Characteristics
+
+| **RMS**
+| Fast. Simple. Measures physical energy. Does not model hearing.
+
+| **LUFS**
+| Accurate. Complex. Measures perceived loudness. K-weighted, gated.
+|===
+
+For a system utility running in real-time on consumer hardware, RMS provides a pragmatic approximation.
+Can be upgraded to true LUFS measurement post-1.0 if warranted.
+
+=== ADR-005 (META.scm)
+
+_Status: Accepted. Date: 2025-10-11._
+
+== 5. Loopback Audio Capture
+
+=== Capture Points Evaluated
+
+[cols="1,2,2"]
+|===
+| Capture Point | Feasibility | Decision
+
+| **Incoming signal (source)**
+| Impossible. Browsers/apps do not expose internal audio to external scripts.
+| Rejected
+
+| **Sampled across video**
+| Too slow. Sudden peaks arrive before sampling can react.
+| Rejected
+
+| **Outgoing signal (loopback)**
+| The only way to hear everything after OS has mixed all sources. Uses PipeWire/PulseAudio monitor sink.
+| **Selected**
+
+| **External microphone**
+| Picks up room noise, air conditioning, conversation. Requires acoustic isolation.
+| Rejected (for capture; used optionally for ambient detection only)
+|===
+
+=== Decision: Loopback via Monitor Sink
+
+Process the outgoing signal using PipeWire's monitor sink (or PulseAudio's monitor device).
+
+**Tradeoff**: If one source is wildly loud, AGC clamps _everything_ including quieter background audio.
+This is acceptable for a consumer utility -- the alternative (per-source processing) requires deep OS integration that is impractical for an external tool.
+
+**Microphone**: Used _only_ for optional ambient noise level detection (with explicit user consent), _not_ for audio capture.
+
+=== ADR-006 (META.scm)
+
+_Status: Accepted. Date: 2025-10-11._
+
+== 6. Linux-First Development
+
+=== Decision
+
+Start development on Linux (Fedora Kionite) targeting PipeWire.
+Port to Windows (WASAPI) and macOS (CoreAudio) later.
+
+=== Rationale
+
+* Developer environment is Fedora Kionite
+* PipeWire is the modern Linux audio server, default on Fedora
+* PipeWire provides PulseAudio compatibility layer
+* Rust ecosystem has mature crates for PipeWire/PulseAudio (`cpal`, `pulsectl`)
+* Windows and macOS ports deferred to v0.7.0
+
+=== Platform Strategy
+
+[cols="1,2,2"]
+|===
+| Platform | Audio Backend | Language
+
+| Linux
+| PipeWire (via PulseAudio compat or native)
+| V (+ Rust shim if needed)
+
+| Windows
+| WASAPI
+| V or C# (NAudio)
+
+| macOS
+| CoreAudio
+| V
+|===
+
+=== ADR-009 (META.scm)
+
+_Status: Accepted. Date: 2025-10-11._
+
+== 7. Privacy: On-Device Only
+
+=== Decision
+
+All audio processing occurs locally on the user's device.
+No audio data is transmitted externally. No cloud processing. No telemetry. No analytics.
+
+=== Rationale
+
+* Audio data is inherently sensitive (conversations, media consumption patterns)
+* Consumer audio optimization does not require cloud-scale compute
+* On-device ML models (e.g., TensorFlow Lite) sufficient for noise classification
+* User trust is paramount for a system-level audio tool
+
+=== ADR-007 (META.scm)
+
+_Status: Accepted. Date: 2025-12-24._
+
+== Summary of Key Technical Choices
+
+[cols="1,3"]
+|===
+| Choice | Decision
+
+| Core language
+| V (with Rust shim option for audio capture)
+
+| Browser extension
+| ReScript -> JavaScript
+
+| AGC architecture
+| Hybrid: real-time AGC + compressed range limiter
+
+| Lookahead
+| 50-100ms circular buffer with dedicated capture thread
+
+| Loudness metric
+| RMS (proxy for LUFS, upgradeable post-1.0)
+
+| Capture point
+| Loopback via PipeWire monitor sink
+
+| Primary platform
+| Linux (Fedora Kionite, PipeWire)
+
+| Privacy model
+| 100% on-device, no cloud, no telemetry
+
+| ABI/FFI
+| Idris2 definitions + Zig implementation (hyperpolymath standard)
+|===
+
+== References
+
+* EBU R128: https://tech.ebu.ch/publications/r128
+* LUFS explained: https://www.izotope.com/en/learn/what-are-lufs.html
+* PipeWire: https://pipewire.org/
+* cpal (Rust): https://github.com/RustAudioGroup/cpal
+* pulsectl (Rust): https://crates.io/crates/pulsectl
+* NAudio (C#): https://github.com/naudio/NAudio
+* PortAudio: https://www.portaudio.com/
+* V Language: https://vlang.io
+* miniaudio: https://miniaud.io/

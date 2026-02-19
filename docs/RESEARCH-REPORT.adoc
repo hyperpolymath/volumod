@@ -1,0 +1,326 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= VoluMod: Research Report
+:toc: left
+:toclevels: 3
+:icons: font
+:date: 2025-12-24
+
+== Executive Summary
+
+This report documents the foundational research conducted for VoluMod, a cross-platform tool for autonomous audio volume and clarity optimization.
+The research was conducted in December 2025 and covers user pain points, existing tools, audio processing techniques, cross-platform frameworks, UX design, and competitor analysis.
+
+== 1. User Pain Points
+
+=== Volume Inconsistency Across Sources
+
+Users encounter audio content from diverse sources (videos, podcasts, calls, games, system notifications) each with varying volume levels and recording qualities.
+This creates a jarring listening experience requiring constant manual adjustment.
+
+=== Limitations of Peak Normalization
+
+Many existing tools rely on **peak normalization** (adjusting based on loudest amplitude) rather than **loudness normalization** (perceptual algorithms measuring average loudness).
+Peak normalization fails to account for dynamic range and human perception, leading to uneven volume even after processing.
+
+=== Lack of Intelligent Automation
+
+Users, especially professionals processing large volumes of audio (podcasters, video editors), find themselves manually adjusting volume levels.
+Strong demand exists for tools that automatically and intelligently normalize audio without manual intervention.
+
+=== No Contextual Adaptation
+
+Existing tools do not adapt to:
+
+* **Time of day** - Different volume needs at night vs. day
+* **Device type** - Headphones vs. speakers have different frequency responses
+* **Environment** - Background noise levels vary (office, commute, home)
+* **Content type** - Speech, music, and games have different dynamic ranges
+
+=== Accessibility Gaps
+
+Tools with hearing loop/telecoil integration, screen reader support, and zero-learning-curve interfaces are extremely rare in the consumer audio space.
+
+== 2. Existing Tools Landscape
+
+=== Professional-Grade Tools
+
+[cols="1,3"]
+|===
+| Tool | Capabilities
+
+| Adobe Audition
+| Noise gates, adaptive noise reduction, comprehensive normalization. Batch processing. Professional pricing.
+
+| Pro Tools
+| Gold standard in audio production. Sophisticated normalization, compression, mastering. Steep learning curve.
+
+| Auphonic Leveler
+| AI-driven loudness normalization for podcasts. Cloud-based processing.
+|===
+
+=== Consumer-Grade Tools
+
+[cols="1,3"]
+|===
+| Tool | Capabilities
+
+| Audacity
+| Free, open-source. Basic normalization. User-friendly but manual workflow.
+
+| Boom 3D
+| System-wide audio enhancement. EQ and 3D surround. macOS/Windows only.
+
+| FXSound
+| Real-time audio enhancement for Windows. EQ presets. Limited normalization.
+
+| Filmora
+| AI-infused audio normalization for video editing. Not a standalone tool.
+|===
+
+=== AI-Enhanced Tools
+
+[cols="1,3"]
+|===
+| Tool | Capabilities
+
+| VEED
+| AI background noise removal. Cloud-based. Video editing focus.
+
+| RNNoise
+| Open-source neural network noise suppression. Library, not end-user tool.
+|===
+
+=== Standards and Recommendations
+
+* **EBU R128** - European Broadcasting Union loudness standard (-23 LUFS for broadcast)
+* **AES TD1008** - Audio Engineering Society recommendation for online distribution loudness normalization
+* **LUFS** - Loudness Units Full Scale, the perceptual loudness metric used by streaming platforms
+* **WCAG 2.1** - Web Content Accessibility Guidelines for audio tool interfaces
+* **ETSI** - European Telecommunications Standards Institute accessibility standards
+
+== 3. Audio Processing Techniques
+
+=== Loudness Normalization
+
+Adjusts overall volume to match a target perceptual loudness level (measured in LUFS).
+Unlike peak normalization, accounts for human auditory perception.
+VoluMod uses **RMS as a computationally cheap proxy for LUFS** (see `docs/DESIGN-DECISIONS.adoc`, ADR-005).
+
+Default targets:
+
+* Auto: -14 LUFS
+* Speech: -16 LUFS
+* Night Mode: -20 LUFS
+* Hearing Assistance: -12 LUFS
+
+=== Dynamic Range Compression
+
+Reduces difference between loud and soft sounds.
+Essential for content with wide dynamic ranges (podcasts with varying speakers, movies with whispers and explosions).
+VoluMod implements a **hybrid AGC with compressed range limiter** (ADR-003).
+
+=== Perceptual Noise Reduction
+
+Background noise degrades clarity.
+Approaches:
+
+* **Spectral gating** - Suppress frequencies below noise floor
+* **RNNoise / deep learning** - Neural network noise suppression trained on noise profiles
+* **Frequency-band noise gating** - Per-band suppression based on noise profile
+
+VoluMod plans AI-ready noise floor detection with optional microphone-based ambient noise awareness.
+
+=== Graphic Equalization
+
+Adjusts amplitude of specific frequency bands.
+Advanced approaches:
+
+* **Sparse design** - Minimize active frequency bands without compromising perceptual quality (reduces computational load)
+* **Neural network equalization** - ML-driven adaptive EQ that bypasses iterative design
+* **Adaptive perceptual equalizers** - Estimate auditory masking effects, compensate for headphone/ambient characteristics
+
+=== Lookahead Processing
+
+Professional compressors and limiters buffer audio to "see" upcoming peaks and pre-emptively adjust volume before the loud sound reaches the speaker.
+VoluMod implements a **50-100ms lookahead buffer** (ADR-004) using a circular buffer with a dedicated audio capture thread.
+
+== 4. Cross-Platform Audio Frameworks
+
+=== System-Level Audio Libraries
+
+[cols="1,1,3"]
+|===
+| Library | Language | Notes
+
+| PortAudio
+| C
+| Free, cross-platform, open-source audio I/O. Simple callback API. Windows, macOS, Linux. Well-documented.
+
+| RtAudio
+| C++
+| Common API for real-time audio I/O. Linux, macOS, Windows. Simplifies hardware interaction.
+
+| JUCE
+| C++
+| De facto standard for audio plugins. Cross-platform (Windows, macOS, Linux, iOS, Android). CMake integration.
+
+| libsoundio
+| C
+| Lightweight abstraction over sound drivers. MIT licensed. No buffering/processing overhead.
+
+| OpenAL
+| C
+| Cross-platform 3D audio. Originally for games. iPhone native audio API.
+
+| miniaudio
+| C
+| Single-header audio library. V bindings available. Playback and capture.
+
+| cpal
+| Rust
+| High-level cross-platform audio I/O. **Best option for Rust-based audio capture.**
+
+| pulsectl
+| Rust
+| PulseAudio API wrapper. **Best option for Linux volume control from Rust.**
+|===
+
+=== Browser Audio APIs
+
+[cols="1,3"]
+|===
+| API/Library | Notes
+
+| Web Audio API
+| W3C Recommendation. High-fidelity processing. AudioWorklet for real-time. Chrome, Firefox, Safari.
+
+| Tone.js
+| Framework for interactive music in browser. Built on Web Audio API.
+
+| Howler.js
+| Lightweight audio control. HTML5 Audio fallback. Audio sprites.
+
+| SoundJS
+| Simplified audio asset loading and management. Cross-browser compatible.
+|===
+
+== 5. UX Design Principles
+
+=== Zero-Learning-Curve Interface
+
+* No sliders, knobs, or technical jargon
+* Clear visual/auditory feedback for active adjustments (e.g., icon color change)
+* Usable by children as young as five and adults with no audio expertise
+
+=== One-Click Bypass
+
+* Prominently placed bypass toggle
+* Instantly disables all processing, reverts to original audio
+* Optional "lock" for temporary manual control
+* Users must never feel trapped by automation
+
+=== Error Handling
+
+* Graceful handling of unsupported formats or hardware limitations
+* Non-intrusive notifications (tooltips, not modals)
+* Audio passes through unmodified on any error
+
+=== Accessibility (WCAG 2.1 AA)
+
+* **Screen readers** - Full ARIA labels and live regions
+* **Keyboard navigation** - All features accessible via keyboard shortcuts
+* **Hearing loops** - Telecoil/T-coil integration for hearing aid users
+* **High contrast** - Respects system preference
+* **Reduced motion** - Respects `prefers-reduced-motion`
+* **Culturally sensitive** - Multilingual support planned
+
+=== Interface Examples from Industry
+
+* **Lewitt CONNECT 2** - Touch-based controls, Autosetup, Clipguard, single-click tools. LED customization. Model for intuitive audio UI.
+* **Focusrite Scarlett** - User-friendly operation, solid build. Software suite for mixing/mastering. Good beginner onboarding.
+* **PreSonus AudioBox 96** - Easy mixer control, zero-latency monitoring. Model for simple controls.
+
+== 6. Competitor Analysis
+
+[cols="2,2,2"]
+|===
+| Feature | VoluMod (Proposed) | Existing Tools
+
+| Auto Volume Normalization
+| Real-time, adaptive, autonomous
+| Often manual or batch processing
+
+| Noise Reduction
+| AI-driven, real-time, environment-aware
+| Limited or manual
+
+| Graphic Equalization
+| Adaptive, sparse design, real-time
+| Manual or preset-based
+
+| Contextual Adaptation
+| Time-of-day, device, environment
+| Rarely supported
+
+| Accessibility
+| WCAG 2.1 AA, hearing loop, screen reader
+| Limited features
+
+| User Interface
+| Zero-learning-curve, one-click bypass
+| Often complex, requires technical knowledge
+
+| Cross-Platform
+| Browser extension + system tray app
+| Mostly standalone desktop apps
+
+| Privacy
+| 100% on-device processing
+| Varies, some cloud-based
+|===
+
+VoluMod's differentiation: **fully autonomous, context-aware, accessible, and privacy-preserving** design that combines system tray and browser extension deployment.
+
+== 7. Technical Stack Validation
+
+=== V Language (System Application)
+
+* Compiled, memory-safe, cross-platform
+* Single binary without external dependencies
+* Emits human-readable C code for GCC/Clang optimization
+* V UI toolkit for cross-platform native GUI
+* miniaudio bindings available for audio I/O
+* **Risk**: Limited PipeWire/PulseAudio bindings compared to Rust
+
+=== ReScript (Browser Extension)
+
+* Type-safe compilation to JavaScript
+* Seamless TypeScript codebase integration
+* Efficient packaging for Chrome MV3 / Firefox XPI
+* Lightweight execution, native-like performance
+
+=== Bebop (Cross-Language IPC)
+
+* Serialization framework for V and JavaScript interop
+* Enables communication between system application and browser extension
+
+=== Idris2 + Zig (ABI/FFI)
+
+* Idris2: Dependent types prove interface correctness at compile-time
+* Zig: Native C ABI compatibility, cross-compilation, zero runtime dependencies
+* Follows hyperpolymath universal ABI/FFI standard
+
+== References
+
+* EBU R128: https://tech.ebu.ch/publications/r128
+* AES TD1008: https://www.aes.org/publications/standards/
+* WCAG 2.1: https://www.w3.org/TR/WCAG21/
+* PortAudio: https://www.portaudio.com/
+* Web Audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+* V Language: https://vlang.io
+* ReScript: https://rescript-lang.org
+* Bebop: https://github.com/betwixt-labs/bebop
+* RNNoise: https://jmvalin.ca/demo/rnnoise/
+* "Hack Audio" by Eric Tarr (audio processing algorithms)
+* Marsyas Framework (C++ audio processing)

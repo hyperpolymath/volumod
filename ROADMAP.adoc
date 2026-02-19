@@ -1,22 +1,177 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-= YOUR Template Repo Roadmap
+// Copyright (c) 2025-2026 Jonathan D.A. Jewell (hyperpolymath) <jonathan.jewell@open.ac.uk>
+= VoluMod Roadmap
+:toc: left
+:toclevels: 3
+:icons: font
 
-== Current Status
+== Current Status: Prototype (v0.1.0)
 
-Initial development phase.
+V core application and ReScript browser extension compile successfully.
+No real audio I/O, no tests, no functional end-to-end pipeline.
+See `TESTING-REPORT.adoc` for build verification details.
+
+== Architecture Decisions
+
+All architecture decisions are documented in `docs/DESIGN-DECISIONS.adoc` and codified in `.machine_readable/META.scm`.
+
+Key decisions:
+
+* **Hybrid AGC + compressed range limiter** (not statistical/LLM)
+* **Lookahead processing** (50-100ms pre-emptive adjustment)
+* **RMS as proxy for LUFS** (psychophysically informed, computationally cheap)
+* **Loopback audio capture** (outgoing signal stage via PipeWire monitor sink)
+* **Linux-first** (PipeWire on Fedora Kionite, then Windows/macOS)
+* **On-device only** (no cloud, no telemetry)
 
 == Milestones
 
-=== v0.1.0 - Foundation
-* [ ] Core functionality
-* [ ] Basic documentation
-* [ ] CI/CD pipeline
+=== v0.1.0 - Foundation [COMPLETE]
+
+_Delivered: 2025-12-29_
+
+* [x] Project structure and RSR template compliance
+* [x] V source code (11 modules, 3067 LOC)
+* [x] ReScript browser extension (3 modules, 2235 LOC)
+* [x] Build verification on Fedora 43 / V 0.4.12
+* [x] Idris2 ABI + Zig FFI template files
+* [x] Bot directives and contractiles
+* [x] GitHub workflows (16+)
+
+=== v0.2.0 - Audio Pipeline
+
+_Target: 2026 Q2_
+
+Priority: Get real audio flowing through the processing chain.
+
+* [ ] **PipeWire/PulseAudio integration** - Loopback audio capture on Linux
+** Evaluate V bindings for PipeWire/PulseAudio
+** If V bindings insufficient, implement Rust shim using `cpal` + `pulsectl` crates
+** Wire loopback capture to processor chain
+* [ ] **Lookahead buffer** - Circular buffer with 50-100ms lookahead window
+** Dedicated audio capture thread
+** Asynchronous stream handler
+** Lookahead index ahead of playback position
+* [ ] **RMS calculation** - Real-time loudness measurement
+** Per-buffer RMS computation
+** Running average with configurable window
+* [ ] **Volume control** - System volume adjustment via PipeWire/PulseAudio API
+* [ ] **Unit tests** - Core module test coverage
+** `audio_buffer_test.v`
+** `dsp_utils_test.v`
+** `normalizer_test.v`
+** `compressor_test.v`
+
+=== v0.3.0 - Minimum Viable Product
+
+_Target: 2026 Q3_
+
+Priority: A working tool that a user can install and forget.
+
+* [ ] **End-to-end normalization** - Audio captured, normalized, output adjusted
+* [ ] **Dynamic range compression** - Adaptive compression active in real-time
+* [ ] **One-click bypass** - Toggle all processing on/off
+* [ ] **System tray UI** - Functional tray icon with status indicator
+* [ ] **Basic presets** - Auto (-14 LUFS), Speech (-16 LUFS), Night Mode (-20 LUFS)
+* [ ] **Justfile recipes** - Working build, test, fmt, lint, clean
+* [ ] **CLI interface** - `volumod start`, `volumod stop`, `volumod status`
+
+=== v0.4.0 - Advanced Processing
+
+_Target: 2026 Q4_
+
+Priority: Contextual intelligence and advanced audio features.
+
+* [ ] **Perceptual noise reduction** - AI-ready noise floor detection
+** Noise profile learning from ambient silence periods
+** Frequency-band noise gating
+* [ ] **Adaptive graphic equalization** - 10-band EQ with context-aware presets
+** Sparse design methodology (minimize active bands for efficiency)
+** Device-specific EQ curves
+* [ ] **Time-of-day profiles** - Automatic adjustment
+** Day mode: standard limits
+** Night mode: compressed range, lower max volume
+** Custom schedules
+* [ ] **Device detection** - Headphones vs. speakers vs. external
+* [ ] **Environment awareness** - Optional microphone for ambient noise level
+** Adaptive perceptual EQ compensating for ambient masking
+** Explicit user opt-in required
+
+=== v0.5.0 - Browser Extension
+
+_Target: 2027 Q1_
+
+Priority: Bring VoluMod to the browser.
+
+* [ ] **Chrome extension** - Manifest V3, Chrome Web Store ready
+* [ ] **Firefox extension** - XPI packaging
+* [ ] **Web Audio API integration** - AudioWorklet processing
+* [ ] **Fix ReScript deprecations** - Migrate 20 `Js.*` calls to modern API
+* [ ] **Extension UI** - Popup with bypass toggle and preset selector
+* [ ] **Per-tab control** - Independent normalization per browser tab
+* [ ] **Browser extension tests** - Playwright/Puppeteer E2E
+
+=== v0.6.0 - Accessibility
+
+_Target: 2027 Q2_
+
+Priority: Ensure VoluMod is usable by everyone.
+
+* [ ] **WCAG 2.1 AA audit** - Full compliance verification
+* [ ] **Screen reader testing** - NVDA, JAWS, Orca
+* [ ] **Hearing loop integration** - Telecoil/T-coil support
+* [ ] **Keyboard navigation** - Complete keyboard shortcut coverage
+* [ ] **High contrast / reduced motion** - System preference respect
+* [ ] **Hearing Assistance preset** - Enhanced clarity mode (-12 LUFS)
+* [ ] **Multi-user accessibility testing** - Diverse user groups
+
+=== v0.7.0 - Cross-Platform
+
+_Target: 2027 Q3_
+
+Priority: Windows and macOS support.
+
+* [ ] **Windows backend** - WASAPI integration (consider C# for this layer)
+* [ ] **macOS backend** - CoreAudio integration
+* [ ] **Platform-specific installers** - MSI, DMG, RPM/DEB
+* [ ] **Cross-platform CI/CD** - Matrix builds for all platforms
 
 === v1.0.0 - Stable Release
-* [ ] Full feature set
-* [ ] Comprehensive tests
+
+_Target: 2027 Q4_
+
+* [ ] Full feature set across Linux, Windows, macOS
+* [ ] Comprehensive test suite (unit, integration, E2E, accessibility)
+* [ ] Performance benchmarked (<50ms total latency including lookahead)
+* [ ] Security audit (panic-attack assail, echidna proofing)
+* [ ] Documentation complete
 * [ ] Production ready
 
-== Future Directions
+== Future Directions (Post-1.0)
 
-_To be determined based on community feedback._
+* **Neural network equalization** - ML-driven adaptive EQ (on-device inference)
+* **Content-type detection** - Automatic preset switching (speech vs. music vs. game)
+* **Multi-device sync** - Consistent settings across devices
+* **Mobile companion** - Tauri 2.0+ mobile app
+* **VST/LV2 plugin** - Integration with professional audio workflows
+* **LUFS upgrade** - Replace RMS proxy with true EBU R128 LUFS measurement
+
+== Critical Path
+
+The critical path to MVP (v0.3.0) requires:
+
+. Resolve language decision for audio capture backend (V vs. Rust shim)
+. Implement PipeWire loopback capture
+. Implement lookahead buffer
+. Wire audio pipeline end-to-end
+. System tray UI operational
+
+Everything else can proceed in parallel.
+
+== References
+
+* `docs/RESEARCH-REPORT.adoc` - Market research and technology survey
+* `docs/DESIGN-DECISIONS.adoc` - Architecture decisions with rationale
+* `.machine_readable/STATE.scm` - Machine-readable project state
+* `.machine_readable/META.scm` - Architecture Decision Records
+* `TESTING-REPORT.adoc` - Build verification report (2025-12-29)

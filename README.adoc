@@ -270,22 +270,36 @@ v test src/
 |===
 | Phase | Features | Status
 
-| MVP
-| Core normalization, compression, bypass, basic UI
-| ✅ Complete
+| v0.1.0 Foundation
+| Project structure, V source (11 modules), ReScript extension (3 modules), build verified
+| Complete
 
-| Phase 2
-| Noise reduction, EQ, contextual adaptation
-| ✅ Complete
+| v0.2.0 Audio Pipeline
+| PipeWire/PulseAudio integration, loopback capture, lookahead buffer, unit tests
+| Not started
 
-| Phase 3
-| Browser extension, accessibility features
-| ✅ Complete
+| v0.3.0 MVP
+| End-to-end normalization, compression, bypass, system tray UI, basic presets
+| Not started
 
-| Phase 4
-| Advanced noise reduction (ML), hearing loop integration
-| 🔄 Planned
+| v0.4.0 Advanced
+| Noise reduction, adaptive EQ, time-of-day profiles, device detection, environment awareness
+| Not started
+
+| v0.5.0 Browser
+| Chrome/Firefox extension, Web Audio API, ReScript deprecation fixes
+| Not started
+
+| v0.6.0 Accessibility
+| WCAG 2.1 AA audit, screen reader testing, hearing loop, keyboard navigation
+| Not started
+
+| v1.0.0 Stable
+| Full feature set, comprehensive tests, cross-platform, production ready
+| Not started
 |===
+
+See link:ROADMAP.adoc[ROADMAP.adoc] for detailed milestone breakdown and link:docs/DESIGN-DECISIONS.adoc[DESIGN-DECISIONS.adoc] for architecture rationale.
 
 === License
 
@@ -295,9 +309,22 @@ Palimpsest-MPL-1.0 License - See LICENSE file for details.
 
 Contributions are welcome! Please read CONTRIBUTING.md for guidelines.
 
+=== Documentation
+
+* link:ROADMAP.adoc[ROADMAP.adoc] - Phased development roadmap with milestones
+* link:TOPOLOGY.md[TOPOLOGY.md] - System architecture diagram and completion dashboard
+* link:docs/RESEARCH-REPORT.adoc[RESEARCH-REPORT.adoc] - Market research and technology survey
+* link:docs/DESIGN-DECISIONS.adoc[DESIGN-DECISIONS.adoc] - Architecture decisions with rationale
+* link:TESTING-REPORT.adoc[TESTING-REPORT.adoc] - Build verification report (2025-12-29)
+* link:.machine_readable/STATE.scm[STATE.scm] - Machine-readable project state
+* link:.machine_readable/META.scm[META.scm] - Architecture Decision Records
+
 === Acknowledgments
 
 * V Language: https://vlang.io
 * Bebop: https://github.com/betwixt-labs/bebop
 * ReScript: https://rescript-lang.org
 * Web Audio API: https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API
+* PortAudio: https://www.portaudio.com/
+* PipeWire: https://pipewire.org/
+* EBU R128: https://tech.ebu.ch/publications/r128
