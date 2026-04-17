@@ -24,7 +24,7 @@
 // To build the libraries with Bebop:
 //   zig build lib \
 //     -Dbebop-include=../../developer-ecosystem/bebop-ffi/include \
-//     -Dbebop-lib=../../developer-ecosystem/bebop-ffi/zig-out/lib/libbebop_v_ffi.a
+//     -Dbebop-lib=../../developer-ecosystem/bebop-ffi/implementations/zig/zig-out/lib/libbebop_v_ffi.a
 
 const std = @import("std");
 
@@ -46,6 +46,8 @@ pub fn build(b: *std.Build) void {
         []const u8,
         "bebop-lib",
         "Path to libbebop_v_ffi.a (or .so) library",
+    // Default points at the Zig implementation's zig-out (bebop-ffi was renamed
+    // from bebop-v-ffi on 2026-04-17; the path below reflects the new structure).
     ) orelse null;
 
     // ------------------------------------------------------------------
@@ -131,11 +133,16 @@ pub fn build(b: *std.Build) void {
     const test_step = b.step("test", "Run all unit tests (no Bebop required)");
     test_step.dependOn(&run_unit.step);
 
-    // FFI bridge tests — require Bebop C headers
+    // FFI bridge tests — require Bebop C headers + library.
+    //
+    // ffi_all_tests.zig imports all regular modules PLUS ffi/bebop_bridge.zig.
+    // Using it as the root (rather than bebop_bridge.zig directly) ensures that
+    // relative @imports inside bebop_bridge.zig (../core/, ../engine/, etc.) are
+    // resolvable via their shared src/zig/ ancestor.
     {
         const ffi_test_step = b.step("test-ffi", "Run FFI bridge tests (requires Bebop)");
         const ffi_mod = b.createModule(.{
-            .root_source_file = b.path("src/zig/ffi/bebop_bridge.zig"),
+            .root_source_file = b.path("src/zig/ffi_all_tests.zig"),
             .target           = target,
             .optimize         = optimize,
             .link_libc        = true,
