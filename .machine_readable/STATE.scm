@@ -7,7 +7,7 @@
     (version "0.1.0")
     (schema-version "1.0")
     (created "2025-12-24")
-    (updated "2026-02-19")
+    (updated "2026-04-17")
     (project "volumod")
     (repo "github.com/hyperpolymath/volumod"))
 
@@ -15,7 +15,7 @@
     (name "VoluMod")
     (tagline "Autonomous audio volume and clarity optimization")
     (tech-stack
-      ("V" "Core audio processing engine, system application")
+      ("Zig" "Core audio processing engine, system application (V port complete 2026-04-17)")
       ("ReScript" "Browser extension, compiles to JavaScript")
       ("Idris2" "ABI definitions with formal proofs")
       ("Zig" "FFI implementation, C-compatible bridge")
@@ -166,9 +166,16 @@
       ("Implement lookahead buffer" "Circular buffer with configurable lookahead window (50-100ms).")
       ("End-to-end audio pipeline" "Capture -> process -> output working on Fedora/PipeWire.")))
 
+  (notes
+    ("2026-04-17 V→Zig port"
+      "All 14 V source files ported to src/zig/ (1:1 file mapping). zig build EXIT 0. zig build test EXIT 0 (47 tests pass). Bebop C library link missing — zig build test-ffi blocked on libbebop_v_ffi. See src/MIGRATION.adoc.")
+    ("2026-04-17 ambientops/volumod removed"
+      "Duplicate at systems-ecosystem/ambientops/volumod/ deleted. This repo is now the sole canonical VoluMod."))
+
   (session-history
     ("2025-12-24" "Initial research and design (Claude.ai research report)")
     ("2025-10-11" "Language evaluation and architecture design (Gemini conversation)")
     ("2025-12-29" "Build verification, fixed 12 V source files, ReScript config fix")
     ("2026-01-03" "RSR template structure, SCM files, bot directives")
-    ("2026-02-19" "Documentation integration: research report, design decisions, roadmap, SCM population")))
+    ("2026-02-19" "Documentation integration: research report, design decisions, roadmap, SCM population")
+    ("2026-04-17" "V→Zig port complete. All DSP/engine/platform/UI/FFI modules ported. 47 tests pass. Bebop link dep flagged in MIGRATION.adoc.")))

@@ -1,0 +1,123 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (C) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= VoluMod V → Zig Migration
+:toc:
+:toc-placement: preamble
+
+Status: **Port complete 2026-04-17; deletion of V sources pending build + audio-correctness verification.**
+
+The `systems-ecosystem/ambientops/volumod` duplicate was removed 2026-04-17.
+This repository (`verification-ecosystem/volumod`) is now the sole canonical copy.
+
+== V → Zig file mapping
+
+[cols="2,2,1", options="header"]
+|===
+| V source | Zig equivalent | Notes
+
+| `src/core/audio_buffer.v`
+| `src/zig/core/audio_buffer.zig`
+| Full port; same f32 interleaved layout.
+
+| `src/core/dsp_utils.v`
+| `src/zig/core/dsp_utils.zig`
+| `BiquadFilter`, `EnvelopeFollower`, dB/linear helpers, smooth coefficient.
+
+| `src/processors/compressor.v`
+| `src/zig/processors/compressor.zig`
+| `Compressor` + `Limiter`; all DSP logic preserved.
+
+| `src/processors/equalizer.v`
+| `src/zig/processors/equalizer.zig`
+| 10-band EQ + `AdaptiveEqualizer`; preset gains identical.
+
+| `src/processors/noise_reducer.v`
+| `src/zig/processors/noise_reducer.zig`
+| Multiband soft gate + voice enhancement filters.
+
+| `src/processors/normalizer.v`
+| `src/zig/processors/normalizer.zig`
+| EBU R128 K-weighted loudness; integrated-sum approach.
+
+| `src/engine/processor.v`
+| `src/zig/engine/processor.zig`
+| Processing chain in identical order (NR → Norm → Comp → EQ → Lim).
+
+| `src/engine/context.v`
+| `src/zig/engine/context.zig`
+| Time-of-day profiles; no heap alloc (fixed arrays).
+
+| `src/platform/audio_capture.v`
+| `src/zig/platform/audio_capture.zig`
+| Platform stubs preserved at identical completeness level.
+
+| `src/ui/tray.v`
+| `src/zig/ui/tray.zig`
+| Tray state machine + menu action handler.
+
+| `src/ui/accessibility.v`
+| `src/zig/ui/accessibility.zig`
+| Announcement queue (fixed ring buffer), focus order, ARIA builders.
+
+| `src/ffi/bebop_bridge.v`
+| `src/zig/ffi/bebop_bridge.zig`
+| C ABI exports (`volumod_init`, `volumod_destroy`, `volumod_process`,
+  `volumod_set_bypass`, `volumod_get_meter`, `volumod_get_state`,
+  `volumod_handle_command`) + `BebopBridge` Zig struct.
+
+| `src/ffi/bebop_types.v`
+| `src/zig/ffi/bebop_types.zig`
+| All serialisable types as `extern struct`; `CommandType` enum preserved.
+
+| `src/main.v`
+| `src/zig/main.zig`
+| Application entry point; `VoluModApp` mirrors V struct layout.
+
+| —
+| `src/zig/all_tests.zig`
+| Test collector; imports all modules for `zig build test`.
+|===
+
+== Bebop FFI wiring
+
+The Zig port uses `@cImport` against the Bebop C ABI header:
+
+[source]
+----
+developer-ecosystem/bebop-ffi/include/bebop_v_ffi.h
+----
+
+Functions referenced: `bebop_ctx_new`, `bebop_ctx_free`, `bebop_ctx_reset`.
+
+=== Build status
+
+* `zig build` — **EXIT 0** (executable + default library targets).
+* `zig build test` — **EXIT 0** (47 tests across 13 modules, all pass).
+* `zig build test-ffi` — **MISSING LINK DEPENDENCY**.
+  The `bebop_v_ffi` shared library (`libbebop_v_ffi.so` / `.a`) is not yet
+  compiled from `developer-ecosystem/bebop-ffi/`.  Provide the library path
+  with `-Dbebop-lib=<path>` to resolve.
+
+== DSP judgment calls
+
+* **Sample type**: f32 throughout (matching V).  f64 is used only for
+  intermediate sums in `rmsLevel` and `Normalizer.process` to preserve
+  numerical accuracy — identical to the V source.
+* **Buffer reuse**: `volumod_process` borrows the caller's sample pointer
+  directly via a stack-constructed `AudioBuffer` view — zero allocation on
+  the hot path.
+* **Hot-path allocations**: none.  All filter state is inline in structs.
+  `BebopBridge.processAudio` allocates one temporary `AudioBuffer` clone
+  per call via the explicit allocator argument, same semantics as V's
+  `core.from_samples`.
+* **Envelope follower in dB space**: the compressor processes the dB-domain
+  envelope (matching V exactly).  The envelope starts at 0.0 dB, which means
+  the first few hundred frames of quiet audio see brief over-compression while
+  the release tail converges — this is V's behaviour, not a Zig regression.
+
+== Docs updated
+
+* `src/MIGRATION.adoc` — this file (new).
+* `v.mod` — description updated with deprecation notice.
+* `.machine_readable/STATE.scm` — updated with port completion status and
+  ambientops/volumod removal note.
