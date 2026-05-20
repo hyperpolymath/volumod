@@ -175,29 +175,40 @@ buildInfo = do
 -- Callback Support
 --------------------------------------------------------------------------------
 
-||| Callback function type (C ABI)
+||| Callback function type (C ABI shape).
+|||
+||| **Implementation note for cartridge instantiation.**
+|||
+||| Idris2 closures are not C-callable: their calling convention is the
+||| runtime's, not the platform C ABI. Passing one as a function pointer
+||| via `believe_me` produces undefined behaviour on any non-trivial
+||| closure, even though it type-checks. The previous template body
+||| did exactly that and shipped the unsafe idiom to every downstream
+||| cartridge; it has been removed.
+|||
+||| The correct pattern is a callback **registry**:
+|||
+|||   1. Idris2 stores the closure in an IORef'd map keyed by an `Int` id.
+|||   2. The C side accepts the `id`, not a function pointer:
+|||      `{{project}}_register_callback_by_id(handle, id) -> Result`
+|||   3. A single C-callable dispatcher is exported from Idris2 via
+|||      `%foreign export "C:{{project}}_dispatch_callback"`; the C side
+|||      invokes it with `(id, arg1, arg2)` and the dispatcher looks
+|||      up the closure by id and runs it.
+|||
+||| Each cartridge implements the registry against its own state:
+||| storing callbacks needs cartridge-specific concurrency choices
+||| (single-threaded IORef vs. atomic / MVar, lifetime model, removal
+||| semantics) that should be made deliberately, not inherited from a
+||| scaffold. The Zig side in `ffi/zig/src/main.zig` must be updated
+||| in lockstep to take `(handle, id)` instead of `(handle, fn_ptr)`.
 public export
 Callback : Type
 Callback = Bits64 -> Bits32 -> Bits32
 
-||| Register a callback
-export
-%foreign "C:{{project}}_register_callback, lib{{project}}"
-prim__registerCallback : Bits64 -> AnyPtr -> PrimIO Bits32
-
-||| Safe callback registration
-export
-registerCallback : Handle -> Callback -> IO (Either Result ())
-registerCallback h cb = do
-  result <- primIO (prim__registerCallback (handlePtr h) (believe_me cb))
-  pure $ case resultFromInt result of
-    Just Ok => Right ()
-    Just err => Left err
-    Nothing => Left Error
-  where
-    resultFromInt : Bits32 -> Maybe Result
-    resultFromInt 0 = Just Ok
-    resultFromInt _ = Just Error
+-- registerCallback is intentionally not provided in this template;
+-- a cartridge that needs C-side callbacks instantiates a registry
+-- per the doc-block above.
 
 --------------------------------------------------------------------------------
 -- Utility Functions
