@@ -1,4 +1,4 @@
-# SPDX-License-Identifier: PMPL-1.0-or-later
+# SPDX-License-Identifier: MPL-2.0
 # justfile - Just recipes for VoluMod
 # See: https://github.com/hyperpolymath/mustfile
 
