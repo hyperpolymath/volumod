@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MPL-2.0
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 pub const __builtin_bswap16 = @import("std").zig.c_builtins.__builtin_bswap16;
 pub const __builtin_bswap32 = @import("std").zig.c_builtins.__builtin_bswap32;
 pub const __builtin_bswap64 = @import("std").zig.c_builtins.__builtin_bswap64;

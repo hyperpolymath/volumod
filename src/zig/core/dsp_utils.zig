@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// Copyright (C) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+// Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 // (MPL-2.0 is the automatic legal fallback until PMPL is formally recognised)
 //
 // dsp_utils.zig - Common DSP utility functions and types.
