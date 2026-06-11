@@ -63,3 +63,6 @@ status:
 scan:
     panic-attack assail . --output /tmp/volumod-scan.json
     @echo "Scan output: /tmp/volumod-scan.json"
+
+secret-scan-trufflehog:
+    @command -v trufflehog >/dev/null && trufflehog filesystem . --only-verified || true
