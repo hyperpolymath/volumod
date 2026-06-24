@@ -7,7 +7,7 @@ converted-from-scm = true
 conversion-date = "2026-06-01T01:34:10Z"
 license = "MPL-2.0"
 
-;; SPDX-License-Identifier: MPL-2.0-or-later
+;; SPDX-License-Identifier: MPL-2.0
 ;; META.scm - Meta-level information for volumod
 ;; Media-Type: application/meta+scheme
 
