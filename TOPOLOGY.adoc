@@ -1,13 +1,8 @@
-<!--
-SPDX-License-Identifier: CC-BY-SA-4.0
-Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
--->
-<!-- Copyright (c) 2025-2026 Jonathan D.A. Jewell (hyperpolymath) -->
-# VoluMod - System Topology
+== VoluMod - System Topology
 
-## System Architecture
+=== System Architecture
 
-```
+....
                          ┌─────────────────────────────────────────┐
                          │            VoluMod System               │
                          └─────────────────────────────────────────┘
@@ -65,28 +60,30 @@ Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
     Capture  →   Buffer     →   Calc     →   Adjust   →   Min/Max
     (monitor)    (50-100ms)     (proxy       (toward      (compressed
                                 for LUFS)    target)      range limiter)
-```
+....
 
-## Completion Dashboard
+=== Completion Dashboard
 
-| Component                | Progress                       | Status              |
-|--------------------------|--------------------------------|---------------------|
-| **Core DSP**             | `██████░░░░` 60%               | Compiles            |
-| **Processors**           | `█████░░░░░` 50%               | Compiles            |
-| **Engine**               | `████░░░░░░` 40%               | Compiles            |
-| **Browser Extension**    | `████░░░░░░` 40%               | Compiles w/warnings |
-| **UI / Tray**            | `██░░░░░░░░` 25%               | Compiles            |
-| **Platform Capture**     | `█░░░░░░░░░` 15%               | Stub                |
-| **Bebop Bridge**         | `█░░░░░░░░░` 15%               | Stub                |
-| **ABI/FFI**              | `█░░░░░░░░░` 10%               | Template            |
-| **Unit Tests**           | `░░░░░░░░░░` 0%                | None                |
-| **Integration Tests**    | `░░░░░░░░░░` 0%                | None                |
-| **─────────────────**    | **───────────────────────────** | **───────────────** |
-| **Overall**              | `███░░░░░░░` **35%**           | **Prototype**       |
+[width="99%",cols="34%,40%,26%",options="header",]
+|===
+|Component |Progress |Status
+|*Core DSP* |`+██████░░░░+` 60% |Compiles
+|*Processors* |`+█████░░░░░+` 50% |Compiles
+|*Engine* |`+████░░░░░░+` 40% |Compiles
+|*Browser Extension* |`+████░░░░░░+` 40% |Compiles w/warnings
+|*UI / Tray* |`+██░░░░░░░░+` 25% |Compiles
+|*Platform Capture* |`+█░░░░░░░░░+` 15% |Stub
+|*Bebop Bridge* |`+█░░░░░░░░░+` 15% |Stub
+|*ABI/FFI* |`+█░░░░░░░░░+` 10% |Template
+|*Unit Tests* |`+░░░░░░░░░░+` 0% |None
+|*Integration Tests* |`+░░░░░░░░░░+` 0% |None
+|*─────────────────* |*───────────────────────────* |*───────────────*
+|*Overall* |`+███░░░░░░░+` *35%* |*Prototype*
+|===
 
-## Key Dependencies
+=== Key Dependencies
 
-```
+....
 VoluMod
 ├── V Compiler (0.4.12+)           Build: system app
 ├── ReScript (12.x)                Build: browser extension
@@ -101,13 +98,13 @@ VoluMod
 ├── echidna                        CI: proof checking / fuzzing
 ├── hypatia                        CI: neurosymbolic intelligence
 └── gitbot-fleet                   CI: automated maintenance
-```
+....
 
-## Critical Path to MVP
+=== Critical Path to MVP
 
-```
+....
 Language Decision ──→ PipeWire Capture ──→ Lookahead Buffer ──→ Audio Pipeline ──→ Tray UI ──→ MVP
      (V vs Rust          (loopback           (circular            (end-to-end       (functional
       for audio           monitor)            50-100ms)            processing)        system tray)
       backend)
-```
+....
