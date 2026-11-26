@@ -1,0 +1,34 @@
+# SPDX-License-Identifier: MPL-2.0
+# Manifest for this repository (schema proven/manifest/v1); see
+# hyperpolymath/proven-cicd-and-workflows docs/PROVEN-ADOPTION.adoc.
+schema = "proven/manifest/v1"
+
+# ---------------------------------------------------------------- languages
+[languages.ignore.idris2]
+reason = "src/abi/*.idr are the Idris2 ABI definitions (no .ipkg, no test target); the umbrella cannot provision idris2 in release 0.1"
+
+[languages.ignore.javascript]
+reason = "browser/*.js and the generated browser/rescript/**/*.mjs are the WebExtension front end: no package.json, no test runner configured (Justfile: 'Browser extension tests not yet configured')"
+
+[languages.ignore.shell]
+reason = "hooks/validate-*.sh are repository lint hooks (SPDX, SHA pins, permissions, CodeQL), not product code, and have no tests of their own"
+
+# -------------------------------------------------------------------- zig
+# The Justfile `build` and `test` recipes still call the V compiler (`v test
+# src/`, `v -prod src/main.v`), which no longer matches the source tree (Zig
+# under src/zig/). They would take precedence over the language default, so the
+# real Zig commands are stated explicitly here.
+[categories.unit.zig]
+command = "zig build test"      # root build.zig, src/zig/all_tests.zig; no Bebop needed
+
+[categories.build.zig]
+command = "zig build"           # root build.zig; the Bebop-dependent `lib` step is not part of the default install
+
+# No smoke or p2p test exists. Visible, expiring waivers, not N/A.
+[categories.smoke.zig.waiver]
+reason = "no smoke test exists: nothing launches the built volumod binary and checks it starts; needs a tests/smoke.sh or a zig build step"
+until = "2027-01-15"
+
+[categories.p2p.zig.waiver]
+reason = "the only inter-component seam is the Bebop FFI bridge (zig build test-ffi), which needs the external bebop-ffi header and library that this repository does not vendor; no p2p test exists"
+until = "2027-01-15"
