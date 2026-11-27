@@ -89,7 +89,6 @@ license = "MPL-2.0"
 
   (development-practices
     (code-style
-      ("V" "Standard V formatting, v fmt")
       ("ReScript" "Standard ReScript formatting")
       ("Idris2" "Standard Idris2 style")
       ("Zig" "Standard zig fmt"))
@@ -99,7 +98,7 @@ license = "MPL-2.0"
       (requirement "Optional microphone access with explicit user consent")
       (requirement "No hardcoded secrets, SHA-pinned dependencies"))
     (testing
-      (unit "V: v test src/ with *_test.v files")
+      (unit "Zig: zig build test (src/zig/all_tests.zig)")
       (unit "ReScript: vitest or similar for browser extension")
       (integration "End-to-end audio pipeline testing")
       (accessibility "WCAG 2.1 AA compliance audit")
