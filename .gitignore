@@ -13,3 +13,8 @@ deps/
 Thumbs.db
 build/
 dist/
+
+# Zig build output
+.zig-cache/
+zig-cache/
+zig-out/
