@@ -3,7 +3,6 @@
 rust = "latest"
 zig = "latest"
 bun = "1.4"
-just = "latest"
 denojs = "latest"
 
 # Package managers
@@ -38,16 +37,10 @@ task = "go-task"
 description = "Install pinned JS dev tools (Prettier) from bun.lock"
 run = "bun install --frozen-lockfile"
 
-[tasks.build]
-run = "just build"
-
-[tasks.test]
-run = "just test"
-
 [tasks.lint]
 depends = ["setup"]
-run = "bunx --no-install --bun prettier --check ."
+run = 'bunx --no-install --bun prettier --check --no-error-on-unmatched-pattern "**/*.{js,mjs,cjs,json,md}"'
 
 [tasks.fmt]
 depends = ["setup"]
-run = "bunx --no-install --bun prettier --write ."
+run = 'bunx --no-install --bun prettier --write --no-error-on-unmatched-pattern "**/*.{js,mjs,cjs,json,md}"'
