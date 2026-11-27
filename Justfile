@@ -6,13 +6,13 @@
 default:
     @just --list
 
-# Build the V system application
+# Build the Zig system application (release)
 build:
-    v -prod src/main.v -o volumod
+    zig build -Doptimize=ReleaseSafe
 
 # Build debug version
 build-debug:
-    v src/main.v -o volumod-debug
+    zig build
 
 # Build the ReScript browser extension
 build-browser:
@@ -22,28 +22,28 @@ build-browser:
 build-all: build build-browser
 
 # Run the application
-run: build
-    ./volumod
+run:
+    zig build run
 
-# Run V tests
+# Run Zig unit tests
 test:
-    v test src/
+    zig build test
 
-# Run all tests (V + browser)
+# Run all tests (Zig + browser)
 test-all: test
     @echo "Browser extension tests not yet configured"
 
-# Format V source code
+# Format Zig source code
 fmt:
-    v fmt -w src/
+    zig fmt build.zig src/zig
 
-# Lint V source code
+# Check Zig formatting
 lint:
-    v fmt -verify src/
+    zig fmt --check build.zig src/zig
 
 # Clean build artifacts
 clean:
-    rm -f volumod volumod-debug
+    rm -rf zig-out .zig-cache
     rm -f browser/rescript/lib/bs/.compiler.log
     rm -rf browser/rescript/lib/bs/.bsbuild
     rm -f browser/rescript/src/*.mjs
@@ -51,13 +51,13 @@ clean:
 # Check project status
 status:
     @echo "=== Build Status ==="
-    @v . && echo "V build: OK" || echo "V build: FAILED"
+    @zig build && echo "Zig build: OK" || echo "Zig build: FAILED"
     @echo ""
     @echo "=== Test Status ==="
-    @v test src/ 2>&1 || true
+    @zig build test 2>&1 || true
     @echo ""
     @echo "=== Binary ==="
-    @ls -lh volumod 2>/dev/null || echo "No binary (run 'just build')"
+    @ls -lh zig-out/bin/volumod 2>/dev/null || echo "No binary (run 'just build')"
 
 # Run panic-attack security scan
 scan:
