@@ -16,7 +16,7 @@ build-debug:
 
 # Build the ReScript browser extension
 build-browser:
-    cd browser/rescript && npx rescript build
+    cd browser/rescript && bunx rescript build
 
 # Build everything
 build-all: build build-browser
